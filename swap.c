@@ -7,6 +7,8 @@ int funnnnnnction(void);
 void not_f(int (*func)(void));
 int fun(void);
 int gun(void);
+int sum_m_elems(void);
+int m[2] = {1,2};
 
 union first_union {
     struct int_version{
@@ -144,11 +146,89 @@ int main(void) {
     divisor << 2; //Left Shifts the bits by 2
     divisor >> 2; //Right Shifts the bits by 2
 
-    printf("Remainder = %d\n", divisor);
+    printf("SHIFT Operator = %d\n", divisor);
+
+    //ANDing Time!!!
+    divisor = 0xFFFB;
+    divisor = divisor & 0x0000; // & operator returns the bitwise AND of two operators
+
+    printf("AND Operator = %d\n", divisor);
+
+    //ORing Time!!
+    divisor = 0xFFFB;
+    // divisor = divisor & 0x0000; // & operator returns the bitwise AND of two operators
+    divisor = divisor ^ 0x0000; // ^ operator returns the bitwise XOR of two operators
+    divisor = divisor | 0x0000; // | operator returns the bitwise inclusive OR of two operators
+
+    printf("OR Operator = %d\n", divisor);
+
+    //Short Circuiting and Logical Operators
+    int* ptr = NULL;
+    
+    printf("Logical AND Operator %d\n", divisor && 0x0000);
+    printf("Logical OR Operator %d\n", divisor || 0x0000); // Short Circuits to 1, not evaluating second operator
+    // This is due to fact that first operator evaluates to !0 
+    printf("Short Circuiting AND Operator %d\n", ptr && *ptr); // Short Circuits to 0, not evaluating second operator
+    // This is due to the fact that the first operator evaluates to 0
+
+    //Casts **DANGEROUS**
+    int* divisor_ptr = &divisor;
+    int cast_ptr = (int)divisor_ptr; //This is a terrible Cast
+
+    printf("Uncast Pointer %d\n", *divisor_ptr); //This returns the correct dereferencing operator
+    printf("Why casts can be dangerous Operator %d\n", cast_ptr); // This returns garbage because casting a pointer to an int doesnt work
+
+    //Conditional Operator
+    divisor = divisor || 0x000 ? 9 : 1; // Conditional operator. First operator before the ? denotes the conditional clause
+    // Next operator before the : denotes value if True
+    // Next operator denotes the value if False
+    // In other words divisor = conditionalStatement ? valueifTrue : valueifFalse
+    printf("Result of the conditional operator is %d\n", divisor);
+
+    divisor = divisor < 4 ? 4 : 5;
+    printf("Result of the conditional operator is %d\n", divisor);
+
+    // a < b < c IS WRONG it evaluates to (a < b) < c which compares 0/1 (the result of a < b) to c
+    // a < b == c < d IS WRONG. The equality operator evlauates LAST 
+    // ptr_a < ptr_b is UNDEFINED BEHAVIOR DONT DO IT 
+
+    //Compound Assignment Operators 
+    divisor = 8;
+    printf("Base value of divisor is %d\n", divisor);
+    divisor += 1; // Changes the variable to the current variable added by 1
+    printf("Result of the += assignment operator is %d\n", divisor);
+    divisor -= 1; // Changes the variable to the current variable subtracted by 1
+    printf("Result of the -= assignment operator is %d\n", divisor);
+    divisor *= 2; // Changes the variable to the current variable multiplied by 2
+    printf("Result of the *= assignment operator is %d\n", divisor);
+    divisor /= 2; // Changes the variable to the current value divided by 2
+    printf("Result of the /= assignment operator is %d\n", divisor);
+    divisor %= 5; // Changes the variable to the current value modded by 5
+    printf("Result of the %%= assignment operator is %d\n", divisor);
+    divisor <<= 3; // Changes the variable to the current value left shifted 3 Places
+    printf("Result of the <<= assignment operator is %d\n", divisor);
+    divisor >>= 2; // Changes the variable to the current value right shifted 2 places
+    printf("Result of the >>= assignment operator is %d\n", divisor);
+    divisor |= 0x0007; // Changes the variable to the current value OR 0x0007
+    printf("Result of the |= assignment operator is %d\n", divisor);
+    divisor &= 0x000C; // Changes the variable to the current value AND x000C
+    printf("Result of the &= assignment operator is %d\n", divisor);
+    divisor ^= 0x0008; // Changes the value to the current value XOR x0008
+    printf("Result of the ^= assignment operator is %d\n", divisor);
+
+    //Too Far Pointer Shit
+    printf("Result of the pointer summation is %d\n", sum_m_elems());
 
 
     return 0;
 
+}
+
+int sum_m_elems(void){
+    int *pi; int j =0;
+    for(pi = &m[0]; pi < &m[2]; ++pi) j += *pi; //&m[2] Exists even though it doesnt point to an array element
+    // This is defined behavior because it allows loops like this to easily increment through the array
+    return j;
 }
 
 void swap(int *pa, int *pb){
