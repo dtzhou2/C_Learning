@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stddef.h>
+#include <limits.h>
 
 void swap(int*, int*);
 int max(int a, int b);
@@ -8,12 +9,13 @@ void not_f(int (*func)(void));
 int fun(void);
 int gun(void);
 int sum_m_elems(void);
+int absolute_value(int a);
 int m[2] = {1,2};
 
 union first_union {
     struct int_version{
         int type;
-        int node_num
+        int node_num;
     } fi;
     struct unsigned_int_version{
         int type;
@@ -31,6 +33,20 @@ typedef struct my_struct {
     char str[20];
     unsigned int j;
 } my_struct;
+
+typedef struct node {
+    int data;
+    struct node *next;
+} node;
+
+typedef struct widget {
+    int data;
+    int *data_2;
+    char name[255];
+    float value;
+} widget;
+
+node *ppp;
 
 int main(void) {
     int a = 21;
@@ -219,12 +235,78 @@ int main(void) {
     //Too Far Pointer Shit
     printf("Result of the pointer summation is %d\n", sum_m_elems());
 
+    //Switch Statement Shit
+    divisor = 100;
+    switch (divisor/10) {
+        case 10: {
+            printf("Hello \n");
+            printf("Hi HI \n"); //This switch case acts the same as an if-else ladder except the condition statement has to be an int
+            break; //Break statement prevents fall-through where it jumps to next switch case instead of quitting switch n  
+        }
+
+    }    
+
+
+    // Why while statements can get trolly
+    // for (ppp = head; ppp!= NULL; ppp->next) free(p)
+    // This does not work because the ppp->next occurs after the free(p) so you are reading a freed variable, which is undefined behavior
+    // Above loop translates to
+    // ppp = head;
+    // while (ppp != NULL){
+    //     free(p);
+    //     ppp = ppp->next;
+    // }
+    // Second Statement in for loop executes at end of loop
+    goto JUMPPOINT;
+
+    // Exercise for demonstrating how control flow works
+    printf("Helllo"); // Jumppoint skips over this statement and moves over to next statement
+    JUMPPOINT:
+        printf("Return value %d\n", absolute_value(20));
+
+    // Pointer Shittttt!!!!!
+    widget *wid_p = malloc(sizeof(widget)); // malloc command allocates enough memory space to hold an object of the size passed in the arguments
+    wid_p->data_2 = malloc(sizeof(int)*3); // By combining malloc with sizeof() we can allocate enough space to fit custom objects and pointers
+    // MALLOC DOES NOT ZERO THE MEMORY
+    wid_p->data_2 = calloc(3, sizeof(int)); // This statement is equivelent to malloc statement above it but CALLOC ZEROES THE MEMORY 
+    // realloc(wid_p->data_2, 5); // This will grow the size of the array by 5 since realloc adds additional memory space to a pointer
+    
+    // Safe Realloc Code Here
+    int *temp_point;
+    if (temp_point = realloc(wid_p->data_2, 5) == NULL){ // If the realloc fails, the original address space defined by wid_p -> data_2
+    // is not freed but is left unreadable, but the output of realloc is NULL
+        free(wid_p->data_2); // By freeing wid_p->data_2 it guarantees that that memory space is not leaked
+    }
+    temp_point = wid_p->data_2;
+    wid_p->data_2 = malloc(sizeof(int)); // Reallocates wid_p->data_2 guarantees that the class is still usable even though data is lost
+
+
+    wid_p->data_2[0] = 5;
+    wid_p->data = 4;
+
+    printf("widget data object = %d", wid_p->data);
+    free(wid_p->data_2); // wid_p->data2 can be considered a dangling pointer because the address it is pointing to has been freed
+    wid_p->data_2 = NULL; //Clears dangling pointer by nullifying pointer vlaue 
+    free(wid_p);
+    wid_p = NULL;
+    free(temp_point);
+    temp_point = NULL;
 
     return 0;
-
 }
 
-int sum_m_elems(void){
+// This code breaks when A = INT_MIN because twos complement means the negation is one greater than the positive range
+// Added if statements to prevent that behavior
+int absolute_value(int a){
+    if ( a < 0 && a != INT_MIN){
+        return -a;
+    }
+    if ( a == INT_MIN) return -1;
+    return a;
+}
+
+int sum_m_elems(void){ 
+    //This set of three statements counts as a compound statement since it is inside curly braces
     int *pi; int j =0;
     for(pi = &m[0]; pi < &m[2]; ++pi) j += *pi; //&m[2] Exists even though it doesnt point to an array element
     // This is defined behavior because it allows loops like this to easily increment through the array
