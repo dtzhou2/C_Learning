@@ -1,7 +1,7 @@
 
 #include <stdio.h>
 
-int print_semiprimes(int a, int b);
+void print_semiprimes(int a, int b);
 int is_prime(int number);
 
 int main(void){
@@ -22,7 +22,7 @@ int main(void){
     return 0;
 }
 
-int print_semiprimes(int a, int b){
+void print_semiprimes(int a, int b){
     for (int n = a; n <= b; n++){
         for(int k = 2; k < n-1; k++){
             if ( n%k == 0 && is_prime(n/k) == 0 && is_prime(k) == 0){

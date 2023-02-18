@@ -59,7 +59,8 @@ static int solution4;
  */
 
 int in_range(int value, int min, int max) {
-
+    if(min <= value || value <= max) return 1;
+    return 0;
 }
 
 /*
@@ -91,7 +92,16 @@ int in_range(int value, int min, int max) {
  */
 
 int set_seed (const char seed_str[]){
+    int seed_value = 0;
+    char padding[250];
 
+    if( sscanf( "%d  %s", seed_value, padding ) == 1) {
+        srand(seed_value);
+        return 1;
+    }
+
+    // Something went wrong / Invalid
+    printf("Sorry Could Not Parse Your Input");
     return 0;
 
 }
@@ -127,7 +137,17 @@ int set_seed (const char seed_str[]){
  */
 
 void start_game (int* one, int* two, int* three, int* four) {
+    solution1 = rand() % 5 + 1;
+    solution2 = rand() % 5 + 1;
+    solution3 = rand() % 5 + 1;
+    solution4 = rand() % 5 + 1;
+    *one = solution1;
+    *two = solution2;
+    *three = solution3;
+    *four = solution4;
+    guess_number = 1;
 
+    printf("Solutions: %d , %d , %d , %d", solution1, solution2, solution3, solution4);
 }
 
 /*
@@ -178,27 +198,40 @@ void start_game (int* one, int* two, int* three, int* four) {
 
 int make_guess (const char guess_str[], int* one, int* two, int* three, int* four){
 
-//  One thing you will need to read four integers from the string guess_str, using a process
+    int* w;
+    int* x;
+    int* y;
+    int* z;
+    char post[2];
+    int low = 1;
+    int imp_matches;
+    int perf_matches;
+    int o_pair;
+    int t_pair;
+    int th_pair;
+    int f_pair;
 
-//  similar to set_seed
+    if(sscanf (guess_str, "%d%d%d%d%1s", w, x, y, z, post) != 4) {
+        printf("make_guess: invalid guess\n");
+        return 0;
+    }
 
-//  The statement, given char post[2]; and four integers w,x,y,z,
+    if(in_range(*w, 1, 6) == 0 || in_range(*x, 1, 6) || in_range(*y, 1, 6) == 0 || in_range(*z, 1, 6) == 0 ){
+        printf("make_guess: invalid guess\n");
+        return 0;
+    }
 
-//  sscanf (guess_str, "%d%d%d%d%1s", &w, &x, &y, &z, post)
+    // Check Guesses
+    
+    switch(*w){
+        case *one:
+            perf_matches += 1;
+        case *two:
+        case *three:
+        case *four:
 
-//  will read four integers from guess_str into the integers and read anything else present into post
-
-//  The return value of sscanf indicates the number of items sucessfully read from the string.
-
-//  You should check that exactly four integers were sucessfully read.
-
-//  You should then check if the 4 integers are between 1-6. If so, it is a valid guess
-
-//  Otherwise, it is invalid.
-
-//  Feel free to use this sscanf statement, delete these comments, and modify the return statement as needed
-
-  
+    }
+    
 
 }
 
