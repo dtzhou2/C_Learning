@@ -216,21 +216,14 @@ int make_guess (const char guess_str[], int* one, int* two, int* three, int* fou
         return 0;
     }
 
-    if(in_range(*w, 1, 6) == 0 || in_range(*x, 1, 6) || in_range(*y, 1, 6) == 0 || in_range(*z, 1, 6) == 0 ){
+    if(in_range(*w, 1, 6) == 0 || in_range(*x, 1, 6) == 0  || in_range(*y, 1, 6) == 0 || in_range(*z, 1, 6) == 0 ){
         printf("make_guess: invalid guess\n");
         return 0;
     }
 
-    // Check Guesses
     
-    switch(*w){
-        case *one:
-            perf_matches += 1;
-        case *two:
-        case *three:
-        case *four:
 
-    }
+    // Check Guesses
     
 
 }
