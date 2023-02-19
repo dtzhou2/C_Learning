@@ -221,17 +221,29 @@ int make_guess (const char guess_str[], int* one, int* two, int* three, int* fou
         return 0;
     }
 
-    // Check Guesses
-    
-    switch(*w){
-        case *one:
-            perf_matches += 1;
-        case *two:
-        case *three:
-        case *four:
+    // Setting Valuees
+    *one = w;
+    *two = x;
+    *three = y;
+    *four = z;
 
+    // Guess one check
+    if ( w = solution1 ){
+        perf_matches = perf_matches + 1;
+        o_pair = 1;
+    }
+    else if ( w = solution2  && !t_pair ){
+        imp_matches = imp_matches + 1;
+        t_pair = 1;
+    }
+    else if ( w = solution3 && !th_pair ){
+        imp_matches = imp_matches + 1;
+        t_pair = 1;
+    }
+    else if ( w = solution4 && !f_pair ){
+        imp_matches = imp_matches + 1;
+        t_pair = 1;
     }
     
-
 }
 
