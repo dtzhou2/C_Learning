@@ -113,7 +113,7 @@ updateBoard(int* board, int boardRowSize, int boardColSize)
  */
 int aliveStable(int* board, int boardRowSize, int boardColSize){
 
-
+    
 
     return 1;
 }
