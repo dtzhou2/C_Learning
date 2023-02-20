@@ -31,16 +31,16 @@ int
 countLiveNeighbor(int* board, int boardRowSize, int boardColSize, int row, int col)
 {
     
-    int nCount; // Counts Number of Neighbors
+    int nCount = 0; // Counts Number of Neighbors
 
     if (row - 1 >= 0) {
         if(col - 1 >= 0){
-            nCount += board[flatten(row-1, col-1)];
+            nCount += board[flatten(boardRowSize, row-1, col-1)];
         }
         if(col + 1 < boardColSize){
-            nCount += board[flatten(row-1, col+1)];
+            nCount += board[flatten(boardRowSize,row-1, col+1)];
         }
-        nCount += board[flatten(row-1, col)];
+        nCount += board[flatten(boardRowSize, row-1, col)];
     }
 
     if (row + 1 < boardRowSize) {
@@ -96,7 +96,7 @@ updateBoard(int* board, int boardRowSize, int boardColSize)
 
     free(board);
 
-    board = &next;
+    board = next;
 
 }
 
@@ -113,13 +113,29 @@ updateBoard(int* board, int boardRowSize, int boardColSize)
  */
 int aliveStable(int* board, int boardRowSize, int boardColSize){
 
-    int* temp_board; 
+    int temp_board[boardRowSize*boardColSize]; 
 
-    memcpy(temp_board, board, sizeof(board));   
+    for (int r=0; r<boardRowSize; r++){
 
+        for (int c=0; c<boardColSize; c++){ 
+            short index = flatten(boardRowSize, r, c);
+            temp_board[index] = board[index];
+        }
+
+    }
     updateBoard(temp_board, boardRowSize, boardColSize);
 
-    memcmp(temp_board, board, sizeof(temp_board));
+    for (int r=0; r<boardRowSize; r++){
+
+        for (int c=0; c<boardColSize; c++){ 
+            short index = flatten(boardRowSize, r, c);
+            if( temp_board[index] != board[index] ) {
+                return 0;
+            }
+        }
+
+    }
 
     return 1;
+
 }
