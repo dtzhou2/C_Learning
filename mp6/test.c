@@ -73,6 +73,7 @@ int main(){
 		for(i=0;i<row;i++){
 			for(j=0;j<col;j++){
 				if(game_board_stu[i*col+j]!= game_board_gold[i*col+j]){
+					printf("Neighbors: %d \n", countLiveNeighbor(game_board_stu, row, col, i, j));
 					printf("updateBoard test failed\n");
 					return 0;
 				}

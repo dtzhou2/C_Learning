@@ -78,26 +78,33 @@ updateBoard(int* board, int boardRowSize, int boardColSize)
 {
     int next[boardRowSize*boardColSize];    
 
-    for (int r=0; r<boardRowSize; r++){
+    for (int r=0; r < boardRowSize; r++){
 
-        for (int c=0; c<boardColSize; c++){ 
+        for (int c=0; c < boardColSize; c++){ 
             int count = countLiveNeighbor(board, boardRowSize, boardColSize, r, c);
-            short index = flatten(boardRowSize, r, c);
+            short index = flatten(boardColSize, r, c);
 
-            if (count == 2 || count == 3){
-                if (!board[index] && count == 3){
-                    next[index] = 1;
-                }
-                next [index] = 0;
-            }
-            next[index] = 0;
+            if(count > 3 || count < 2) next[index] = 0 ;
+            else if(count == 3) next[index] = 1;
+            else next[index] = board[index];
+
         }
 
     }
 
-    free(board);
+    for (int r=0; r<boardRowSize; r++){
 
-    board = next;
+        for (int c=0; c<boardColSize; c++){ 
+            short index = flatten(boardColSize, r, c);
+
+            board[index] = next[index];
+        }
+
+    }
+
+    // free(board);
+
+    // board = next;
 
 }
 
@@ -119,7 +126,7 @@ int aliveStable(int* board, int boardRowSize, int boardColSize){
     for (int r=0; r<boardRowSize; r++){
 
         for (int c=0; c<boardColSize; c++){ 
-            short index = flatten(boardRowSize, r, c);
+            int index = flatten(boardColSize, r, c);
             temp_board[index] = board[index];
         }
 
@@ -129,7 +136,7 @@ int aliveStable(int* board, int boardRowSize, int boardColSize){
     for (int r=0; r<boardRowSize; r++){
 
         for (int c=0; c<boardColSize; c++){ 
-            short index = flatten(boardRowSize, r, c);
+            int index = flatten(boardRowSize, r, c);
             if( temp_board[index] != board[index] ) {
                 return 0;
             }
