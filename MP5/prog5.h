@@ -15,4 +15,8 @@ void start_game (int* one, int* two, int* three, int* four);
 int make_guess (const char guess_str[], int* one, int* two, 
 		    int* three, int* four);
 
+int in_range(int value, int min, int max);
+
+int check_guess()
+
 #endif /* PROG_4_H */
