@@ -23,9 +23,10 @@
  */
 
 // Turns 2d Coordinate into 1d coordinate of array
-int flatten(int boardRowSize, int row, int col) {
-    return (row*boardRowSize + col);
+int flatten(int boardColSize, int row, int col) {
+    return (row*boardColSize + col);
 }
+
 
 int
 countLiveNeighbor(int* board, int boardRowSize, int boardColSize, int row, int col)
@@ -35,30 +36,30 @@ countLiveNeighbor(int* board, int boardRowSize, int boardColSize, int row, int c
 
     if (row - 1 >= 0) {
         if(col - 1 >= 0){
-            nCount += board[flatten(boardRowSize, row-1, col-1)];
+            nCount += board[flatten(boardColSize, row-1, col-1)];
         }
         if(col + 1 < boardColSize){
-            nCount += board[flatten(boardRowSize,row-1, col+1)];
+            nCount += board[flatten(boardColSize,row-1, col+1)];
         }
-        nCount += board[flatten(boardRowSize, row-1, col)];
+        nCount += board[flatten(boardColSize, row-1, col)];
     }
 
     if (row + 1 < boardRowSize) {
         if(col - 1 >= 0){
-            nCount += board[flatten(boardRowSize, row+1, col-1)];
+            nCount += board[flatten(boardColSize, row+1, col-1)];
         }
         if(col + 1 < boardColSize){
-            nCount += board[flatten(boardRowSize, row+1, col+1)];
+            nCount += board[flatten(boardColSize, row+1, col+1)];
         }
-        nCount += board[flatten(boardRowSize, row+1, col)];
+        nCount += board[flatten(boardColSize, row+1, col)];
     }
 
     if(col - 1 >= 0){
-            nCount += board[flatten(boardRowSize, row, col-1)];
+            nCount += board[flatten(boardColSize, row, col-1)];
     }
         
     if(col + 1 < boardColSize){
-            nCount += board[flatten(boardRowSize, row, col+1)];
+            nCount += board[flatten(boardColSize, row, col+1)];
     }
 
     return nCount;

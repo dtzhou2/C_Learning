@@ -52,6 +52,7 @@ int main(){
 			goldCount = countLiveNeighbor_gold(game_board_gold,row,col,i,j);
 			if(stuCount != goldCount){
 				printf("countLiveNeighbor test failed\n");
+				printf("goldCount: %d stuCount: %d", goldCount, stuCount);
 				return 0;
 			}
 		}
