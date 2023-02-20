@@ -211,17 +211,17 @@ int make_guess (const char guess_str[], int* one, int* two, int* three, int* fou
     int th_pair;
     int f_pair;
 
-    if(sscanf (guess_str, "%d%d%d%d%1s", w, x, y, z, post) != 4) {
+    if(sscanf (guess_str, "%d %d %d %d %1s", w, x, y, z, post) != 4) {
         printf("make_guess: invalid guess\n");
         return 0;
     }
 
-    if(in_range(*w, 1, 6) == 0 || in_range(*x, 1, 6) || in_range(*y, 1, 6) == 0 || in_range(*z, 1, 6) == 0 ){
+    if(in_range(*w, 1, 6) == 0  in_range(*x, 1, 6) || in_range(*y, 1, 6) == 0 || in_range(*z, 1, 6) == 0 ){
         printf("make_guess: invalid guess\n");
         return 0;
     }
 
-    // Setting Valuees
+    // Setting Values
     *one = w;
     *two = x;
     *three = y;
@@ -238,12 +238,48 @@ int make_guess (const char guess_str[], int* one, int* two, int* three, int* fou
     }
     else if ( w = solution3 && !th_pair ){
         imp_matches = imp_matches + 1;
-        t_pair = 1;
+        th_pair = 1;
     }
     else if ( w = solution4 && !f_pair ){
         imp_matches = imp_matches + 1;
+        f_pair = 1;
+    }
+
+    // Guess Two Check
+    if ( w = solution1 ){
+        perf_matches = perf_matches + 1;
+        o_pair = 1;
+    }
+    else if ( w = solution2  && !t_pair ){
+        imp_matches = imp_matches + 1;
         t_pair = 1;
     }
-    
+    else if ( w = solution3 && !th_pair ){
+        imp_matches = imp_matches + 1;
+        th_pair = 1;
+    }
+    else if ( w = solution4 && !f_pair ){
+        imp_matches = imp_matches + 1;
+        f_pair = 1;
+    }
+
+    // Guess Three Check
+    if ( w = solution1 ){
+        perf_matches = perf_matches + 1;
+        o_pair = 1;
+    }
+    else if ( w = solution2  && !t_pair ){
+        imp_matches = imp_matches + 1;
+        t_pair = 1;
+    }
+    else if ( w = solution3 && !th_pair ){
+        imp_matches = imp_matches + 1;
+        th_pair = 1;
+    }
+    else if ( w = solution4 && !f_pair ){
+        imp_matches = imp_matches + 1;
+        f_pair = 1;
+    }
+
 }
 
