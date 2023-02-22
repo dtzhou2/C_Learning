@@ -21,11 +21,13 @@ int is_val_valid(const int val, const int i, const int j, const int sudoku[9][9]
 // Function: solve_sudoku
 int solve_sudoku(int sudoku[9][9]);
 
+// Function: find_empty
+int find_empty(int *i, int *j, const int sudoku[9][9]);
+
 // Procedure: print_sudoku
 void print_sudoku(int sudoku[9][9]);
-
+    
 // Procedure: parse_sudoku
 void parse_sudoku(const char fpath[], int sudoku[9][9]);
-
 
 #endif
