@@ -87,6 +87,12 @@ cell * get_cell(game * cur_game, int row, int col)
 	if the row and col coordinates do not exist.
 */
 {
+    int g_row=cur_game->rows;
+    int g_col=cur_game->cols;
+
+    if( row > g_row || col > g_col || row < 0 || col < 0) return NULL;
+
+    return cur_game->cells + ((row * g_col) + col);
 
 }
 
@@ -102,18 +108,37 @@ int move_w(game * cur_game)
 };
 
 int move_s(game * cur_game) //slide down
+/*!Slides all of the tiles in cur_game downwards. If a tile matches with the
+   one below it it, the tiles are merged by adding their values together. When
+   tiles merge, increase the score by the value of the new tile. A tile can
+   not merge twice in one turn. If sliding the tiles up does not cause any
+   cell to change value, w is an invalid move and return 0. Otherwise, return 1.
+*/
 {
-
+    return 1;
 };
 
 int move_a(game * cur_game) //slide left
+/*!Slides all of the tiles in cur_game leftwards. If a tile matches with the
+   one to the left of it, the tiles are merged by adding their values together. When
+   tiles merge, increase the score by the value of the new tile. A tile can
+   not merge twice in one turn. If sliding the tiles up does not cause any
+   cell to change value, w is an invalid move and return 0. Otherwise, return 1.
+*/
 {
-
+    return 1;
 };
 
 int move_d(game * cur_game) //slide to the right
+/*!Slides all of the tiles in cur_game rightwards. If a tile matches with the
+   one to the right of it, the tiles are merged by adding their values together. When
+   tiles merge, increase the score by the value of the new tile. A tile can
+   not merge twice in one turn. If sliding the tiles up does not cause any
+   cell to change value, w is an invalid move and return 0. Otherwise, return 1.
+*/
 {
 
+    return 1;
 };
 
 int legal_move_check(game * cur_game)
@@ -122,7 +147,9 @@ int legal_move_check(game * cur_game)
 	Return 1 if there are possible legal moves, 0 if there are none.
  */
 {
-
+    if(!move_w && !move_a && !move_s && !move_d) return 0;
+    
+    return 1;
 }
 
 
