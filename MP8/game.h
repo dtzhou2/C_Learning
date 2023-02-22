@@ -45,3 +45,5 @@ void remake_game(game ** _cur_game,int new_rows,int new_cols);
 int process_turn(const char input_char, game* cur_game);
 int print_game(game * cur_game);
 void rand_new_tile(game * cur_game);
+
+int find_empty(game * cur_game, int i, int j, int dir, int step);

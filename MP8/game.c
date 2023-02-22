@@ -1,28 +1,5 @@
 #include "game.h"
 
-/* Eric Roch - MP8
- * This program implements the popular game 2048 in the terminal.
- * The program asks the user to input a board size and dynamically
- * allocates memory to create a custom data struct to store the game
- * state.  The user may then press w,a,s,d to slide the 2048 tiles
- * around; q to quit the game; or n to generate a fresh game.
- *
- * The game begins with a random value tile of either 2 or 4 placed
- * at a random location on the board. The player controls the game
- * using the direction keys w, a, s, and d. Whenever a direction is
- * pressed, all tiles will first slide in that direction for as far
- * as possible. As they slide, if two numbers of the same value
- * collide, they merge into a single tile whose value is the sum of
- * of the two values. The resulting tile cannot merge with another
- * tile again in the same move. Additionally, when sliding a row with
- * more than two like terms, merging occurs first based on the direction
- * of sliding. Finally, whenever a direction is pressed that results
- * in at least 1 tile changing position, a new random value tile of
- * either 2 or 4 placed at a random empty location on the board.
- * The score is shown at the top of the game.  Whenever 2 tiles merge,
- * their sum is added to the total score.
- */
-
 game * make_game(int rows, int cols)
 /*! Create an instance of a game structure with the given number of rows
     and columns, initializing elements to -1 and return a pointer
@@ -90,10 +67,22 @@ cell * get_cell(game * cur_game, int row, int col)
     int g_row=cur_game->rows;
     int g_col=cur_game->cols;
 
-    if( row > g_row || col > g_col || row < 0 || col < 0) return NULL;
+    if( row >= g_row || col >= g_col || row < 0 || col < 0) return NULL;
 
-    return cur_game->cells + ((row * g_col) + col);
+    return (cur_game->cells) + (row * cur_game->cols) + col;
 
+}
+
+// Dir = Direction of search - 0 = left/right 1 = up/down
+// Step = Direction of Step - -1 = -1 step 1 = 1 step
+int find_empty(game * cur_game, int i, int j, int dir, int step){
+    
+    if(dir == 1) dir = cur_game->rows;
+    else dir = cur_game->cols;
+
+    for(int i=0; i<dir; i+=step){
+    }
+    
 }
 
 int move_w(game * cur_game)
@@ -105,6 +94,70 @@ int move_w(game * cur_game)
 */
 {
 
+    int g_row=cur_game->rows;
+    int g_col=cur_game->cols; //Makes calling 
+    int lcr; //lcr = last combined row
+    int move = 0;
+
+    for(int i=0; i<g_col; i++){
+        lcr = 0;
+
+        // Aligns the game clearing empty spots
+        for (int j=g_row-1; j>=0; j--){
+            // Align the Board so merging can happen
+            // printf("row # %d", j);
+            // print_game(cur_game);
+            cell* current_cell = get_cell(cur_game, j, i);
+            // printf("current # %d \n", *current_cell);
+            if(*current_cell == -1) continue;
+            cell* value = get_cell(cur_game, j-1, i);
+            // if(value != NULL) printf("value # %d", *value);
+            if (value != NULL && *value == -1) {
+                *value = (*current_cell);
+                *current_cell = -1;
+                move = 1;
+            } 
+            else continue;
+        }
+
+        // Does the combination 
+        for (int j=0; j<g_row; j++){
+            // print_game(cur_game);
+            // printf("row # %d \n", j);
+            cell* current_cell = get_cell(cur_game, j, i);
+            cell* value = get_cell(cur_game, j+1, i);
+            if(value != NULL && *value == *current_cell && lcr != value+1
+                && *current_cell != -1){
+                *current_cell = (*current_cell) + (*value);
+                *value = -1;
+                lcr = value+1;
+                move = 1;
+            }
+            else continue;
+        }
+
+        // Aligns the game clearing empty spots
+        for (int j=g_row-1; j>=0; j--){
+            // Align the Board so merging can happen
+            // printf("row # %d", j);
+            // print_game(cur_game);
+            cell* current_cell = get_cell(cur_game, j, i);
+            // printf("current # %d \n", *current_cell);
+            if(*current_cell == -1) continue;
+            cell* value = get_cell(cur_game, j-1, i);
+            if(value != NULL) printf("value # %d", *value);
+            if (value != NULL && *value == -1) {
+                *value = (*current_cell);
+                *current_cell = -1;
+                move = 1;
+            } 
+            else continue;
+        }
+
+    }
+
+    return move;
+
 };
 
 int move_s(game * cur_game) //slide down
@@ -115,7 +168,69 @@ int move_s(game * cur_game) //slide down
    cell to change value, w is an invalid move and return 0. Otherwise, return 1.
 */
 {
-    return 1;
+    int g_row=cur_game->rows;
+    int g_col=cur_game->cols; //Makes calling 
+    int lcr; //lcr = last combined row
+    int move = 0;
+
+    for(int i=0; i<g_col; i++){
+        lcr = 0;
+
+        // Aligns the game clearing empty spots
+        for (int j=0; j<g_row; j++){
+            // Align the Board so merging can happen
+            // printf("row # %d", j);
+            // print_game(cur_game);
+            cell* current_cell = get_cell(cur_game, j, i);
+            // printf("current # %d \n", *current_cell);
+            if(*current_cell == -1) continue;
+            cell* value = get_cell(cur_game, j+1, i);
+            // if(value != NULL) printf("value # %d", *value);
+            if (value != NULL && *value == -1) {
+                *value = (*current_cell);
+                *current_cell = -1;
+                move = 1;
+            } 
+            else continue;
+        }
+
+        // Does the combination 
+        for (int j=g_row-1; j>=0; j--){
+            // print_game(cur_game);
+            // printf("row # %d \n", j);
+            cell* current_cell = get_cell(cur_game, j, i);
+            cell* value = get_cell(cur_game, j-1, i);
+            if(value != NULL && *value == *current_cell && lcr != value+1
+                && *current_cell != -1){
+                *current_cell = (*current_cell) + (*value);
+                *value = -1;
+                lcr = value+1;
+                move = 1;
+            }
+            else continue;
+        }
+
+        // Aligns the game clearing empty spots
+        for (int j=0; j<g_row; j++){
+            // Align the Board so merging can happen
+            // printf("row # %d", j);
+            // print_game(cur_game);
+            cell* current_cell = get_cell(cur_game, j, i);
+            // printf("current # %d \n", *current_cell);
+            if(*current_cell == -1) continue;
+            cell* value = get_cell(cur_game, j+1, i);
+            if(value != NULL) printf("value # %d", *value);
+            if (value != NULL && *value == -1) {
+                *value = (*current_cell);
+                *current_cell = -1;
+                move = 1;
+            } 
+            else continue;
+        }
+
+    }
+
+    return move;
 };
 
 int move_a(game * cur_game) //slide left
@@ -126,7 +241,67 @@ int move_a(game * cur_game) //slide left
    cell to change value, w is an invalid move and return 0. Otherwise, return 1.
 */
 {
-    return 1;
+    int g_row=cur_game->rows;
+    int g_col=cur_game->cols; //Makes calling 
+    int lcr; //lcr = last combined row
+    int move = 0;
+
+    for(int j=0; j<g_row; j++){
+        lcr = 0;
+
+        // Aligns the game clearing empty spots
+        for (int i=g_col-1; i>=0; i--){
+            // Align the Board so merging can happen
+            // printf("row # %d", j);
+            // print_game(cur_game);
+            cell* current_cell = get_cell(cur_game, j, i);
+            // printf("current # %d \n", *current_cell);
+            if(*current_cell == -1) continue;
+            cell* value = get_cell(cur_game, j, i-1);
+            if (value != NULL && *value == -1) {
+                *value = (*current_cell);
+                *current_cell = -1;
+                move = 1;
+            } 
+            else continue;
+        }
+
+        // Does the combination 
+        for (int i=0; i<g_col; i++){
+            // print_game(cur_game);
+            // printf("row # %d \n", j);
+            cell* current_cell = get_cell(cur_game, j, i);
+            cell* value = get_cell(cur_game, j, i+1);
+            if(value != NULL && *value == *current_cell && lcr != value+1
+                && *current_cell != -1){
+                *current_cell = (*current_cell) + (*value);
+                *value = -1;
+                lcr = value+1;
+                move = 1;
+            }
+            else continue;
+        }
+
+        // Aligns the game clearing empty spots
+        for (int i=g_col-1; i>=0; i--){
+            // Align the Board so merging can happen
+            // printf("row # %d", j);
+            // print_game(cur_game);
+            cell* current_cell = get_cell(cur_game, j, i);
+            // printf("current # %d \n", *current_cell);
+            if(*current_cell == -1) continue;
+            cell* value = get_cell(cur_game, j, i-1);
+            if (value != NULL && *value == -1) {
+                *value = (*current_cell);
+                *current_cell = -1;
+                move = 1;
+            } 
+            else continue;
+        }
+
+    }
+
+    return move;
 };
 
 int move_d(game * cur_game) //slide to the right
@@ -137,8 +312,72 @@ int move_d(game * cur_game) //slide to the right
    cell to change value, w is an invalid move and return 0. Otherwise, return 1.
 */
 {
+    int g_row=cur_game->rows;
+    int g_col=cur_game->cols; //Makes calling 
+    int lcr; //lcr = last combined row
+    int move = 0;
+           
+    print_game(cur_game);
 
-    return 1;
+    for(int j=0; j<g_row; j++){
+        lcr = 0;
+
+        // Aligns the game clearing empty spots
+        for (int i=0; i<g_col; i++){
+            // Align the Board so merging can happen
+            // printf("row # %d", j);
+            // print_game(cur_game);
+            cell* current_cell = get_cell(cur_game, j, i);
+            // printf("current # %d \n", *current_cell);
+            if(*current_cell == -1) continue;
+            cell* value = get_cell(cur_game, j, i+1);
+            // if(*value != NULL) printf("current # %d \n", *value);
+            if (value != NULL && *value == -1) {
+                *value = (*current_cell);
+                *current_cell = -1;
+                move = 1;
+            } 
+            else continue;
+        }
+
+        // Does the combination 
+        for (int i=g_col-1; i>=0; i--){
+            print_game(cur_game);
+            // printf("row # %d \n", j);
+            cell* current_cell = get_cell(cur_game, j, i);
+            cell* value = get_cell(cur_game, j, i-1);
+            if(value != NULL && *value == *current_cell && lcr != value+1
+                && *current_cell != -1){
+                *current_cell = (*current_cell) + (*value);
+                *value = -1;
+                lcr = value+1;
+                move = 1;
+                printf("Changed");
+            }
+            else continue;
+        }
+
+        // Aligns the game clearing empty spots
+        for (int i=0; i<g_col; i++){
+            // Align the Board so merging can happen
+            // printf("row # %d", j);
+            // print_game(cur_game);
+            cell* current_cell = get_cell(cur_game, j, i);
+            // printf("current # %d \n", *current_cell);
+            if(*current_cell == -1) continue;
+            cell* value = get_cell(cur_game, j, i+1);
+            if (value != NULL && *value == -1) {
+                *value = (*current_cell);
+                *current_cell = -1;
+                move = 1;
+            } 
+            else continue;
+        }
+
+    }
+    
+    return move;
+
 };
 
 int legal_move_check(game * cur_game)

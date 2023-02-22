@@ -69,7 +69,7 @@ int main(){
 	ptr1 = game_cpy1->cells;
 	ptr2 = game_cpy2->cells;
 	
-	cell temparray[12] = {2, 4, 4, 8, 4, -1, -1, 4, -1, 2, 4, 8};
+	cell temparray[12] = {2, 4, 4, 8, 4, 2, -1, 4, 2, 2, 4, 8};
 	for( i =0; i<12;i++){
 		*cell_ptr_orig = temparray[i];
 		*ptr1 = temparray[i];
@@ -161,7 +161,7 @@ int main(){
 		ptr1++;
 		ptr2++;
 	}
-	printf("test 11: pass - move_a moves the tiles around correctly\n");
+	printf("test 11: pass - move_d moves the tiles around correctly\n");
 	
 	remake_game(&game_cpy1,12,8);
 	
