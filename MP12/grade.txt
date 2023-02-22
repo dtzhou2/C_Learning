@@ -1,0 +1,18 @@
+Compilation Results:
+********************
+ 
+
+ ------------------- Begin Verifying MP12 ---------------------
+getName() 16/16
+Rectangle: 16/16
+Circle: 16/16
+Sphere: 16/16
+RectPrism: 16/16
+MaxArea(): 10/10
+MaxVolume(): 10/10
+Late Penalty: 0
+Your total Score for MP12: 100/100
+-------------------- End Verifying MP12 ----------------------
+
+
+
