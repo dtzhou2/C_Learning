@@ -66,7 +66,7 @@ int main(void){
 
     // Basic GetChar / PutChar functionality allows us to create very powerufl programs
     // GetChar just reads one char from input stream, putcharm dumps that char into stdout
-    int c ; // We usse int variable here since EOF is too big to store in a char
+    // int c ; // We usse int variable here since EOF is too big to store in a char
     // If you think about how it works under the hood a char is just a super tiny int
 
     // Any assignment in C has an expression and a value, which is the value of the left-hand side
@@ -133,16 +133,49 @@ int main(void){
 
     // printf("The average of the numbers: %lf\n", average);
 
-    int num = -1;
+    // int num = -1;
 
-    while (num != 0 && (num > 10 || num < 0)){
-        printf(" Enter the number of * to print out (1-10), enter 0 to exit: ");
-        scanf("%d", &num);
-    }
+    // while (num != 0 && (num > 10 || num < 0)){
+    //     printf(" Enter the number of * to print out (1-10), enter 0 to exit: ");
+    //     scanf("%d", &num);
+    // }
 
-    for ( int i = 0; i < num ; i ++){
-        printf("*");
-    }
+    // long nc;
+
+    // nc = 0;
+
+    // while (getchar() != EOF)
+    //     ++ nc;
+
+    // printf("%ld\n", nc);
+
+    // int c, n1;
+
+    // int pchar;
+
+    // n1 = 0 ;
+
+    // Count the amount of line breaks in your input char
+    // while((c = getchar()) != EOF)
+    //     if (c == '\n')
+    //         ++n1;
+    // printf("%d\n", n1);
+
+    // Write a program to count blanks, tabs, and newlines
+    // while((c = getchar()) != EOF)
+    //     if (c == '\n' || c == ' ' || c == '\t')
+    //         ++n1;
+    // printf("%d\n", n1);
+
+    // Outputs the input string minus all the whitespace
+    // while((c = getchar()) != EOF){
+    //     if (c != pchar) {
+    //         putchar(c);
+    //         pchar = c;
+    //     }
+    // }
+
+
 
     return 0;
 }
