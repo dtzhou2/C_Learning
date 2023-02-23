@@ -12,8 +12,43 @@
  */
 maze_t * createMaze(char * fileName)
 {
-    maze_t
+    FILE *fp;
+    int* o_width;
+    int* o_height;
+    char ** o_cells;
 
+    fp = fopen(fileName, "r");
+    maze_t * o_maze = (maze_t*)malloc(sizeof(maze_t));
+
+    if (o_maze == NULL) {
+        printf("Maze allocation failed");
+        return NULL;
+    }
+
+    fscanf(fp, "%d %d \n", o_width, o_height);
+
+    o_cells = (char**)malloc(*o_height * sizeof(char));
+
+    for(int i=0; i<*o_height; i++) o_cells[i] = (char*)malloc(*o_width * sizeof(char));
+
+    for(int i=0; i<*o_height; i++){
+        for(int j=0; j<*o_width; j++){
+            if(fscanf(fp, "%c", &o_cells[i][j]) == "S"){
+                o_maze->startColumn=j;
+                o_maze->startRow=i;
+            }
+            else if (o_cells[i][j] == "E"){
+                o_maze->endColumn=j;
+                o_maze->endRow=i;
+            }
+        }
+    }
+
+    o_maze->width=*o_width;
+    o_maze->height=*o_height;
+    o_maze->cells=o_cells;
+
+    return o_maze;
 }
 
 /*
