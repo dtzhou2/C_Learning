@@ -1,26 +1,5 @@
 #include "floorplan.h"
 
-/* MP11 - Eric Roch
- * This program uses a binary tree structure to represent a series of rectangles
- * grouped into a larger area.  This can be used to model how circuits can be
- * arragned on a die.  The tree consists of module nodes, which hold information
- * about a single rectangular module, and cut nodes, which define how the final
- * shape is cut to produce the subsequent nodes.
- *
- * This program starts by creating the tree recursively after parsing an input
- * file.  The genreated tree is left-skewed, meaning every node has a right
- * subtree of a single module node, and a left subtree of a cut node which is
- * the root of a similar tree. The program also contains functions to rotate a
- * module (swap dimensions), switch the cut direction, swap two nodes, and swap
- * two subtrees.  It can also generate a postfix expression for how to cut/assemble
- * the modules by traversing the tree in postfix order (left->right->root).
- */
-
-/*This program will try to use tree to organize shapes in sush a way as the rectangles are organized in a bigger reactangle
-This is very important to circuits designs and organizing things on silicon The trees will be sliced.*/
-
-// Global variables. The global variables will be effectice after the input has been parsed
-// by calling the procedure read_module.
 int num_modules;                                            // # of input modules.
 module_t* modules;                                          // Array for modules.
 

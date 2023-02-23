@@ -3,26 +3,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-/* MP10 - Eric Roch
- * This program stores a matrix as a linked list of non-zero elements.
- * This is a useful way to save space when dealing with larger matricies
- * that have a large number of empty elements, as a linked list grows
- * with the number of non-zero elements, as opposed to being fixed by the
- * matrix dimensions.  To create the list, we read a file that specifies
- * the width and height of the matrix, followed by a list of x,y coordinates
- * and values (not including empty elements). The bulk of this program is
- * in set_tuples(), which handles five separate cases when setting the value
- * of an element in the matrix.  If the matrix is empty, i.e. the list head
- * is null, we create a node and set it as the head.  Otherwise, if the value
- * to be set is zero, we remove the corresponding node if it exists or ignore
- * it otherwise.  If the value is non-zero, we either must update an existing
- * node or create a new one and insert it at the proper location.
- *
- * This program also contains functions to perform basic matrix operations
- * and to print a list of coordinates and values in the list.
- */
-
-
 
 sp_tuples * load_tuples(char* input_file)
 {

@@ -1,19 +1,6 @@
 #include "shape.hpp"
 
-/* MP 12 - Eric Roch
- * This MP demonstrates C++ classes and inheritance.
- * The beginning of this file contains class implementations for
- * various shapes, which all extend a base class, Shape.
- * At the end of the file are three functions that read a list of
- * shapes from a file and compute the maximum area and volume of
- * those shapes.
- */
 
-
-//Base class
-//Please implement Shape's member functions
-//constructor, getName()
-//
 //Base class' constructor should be called in derived classes'
 //constructor to initizlize Shape's private variable
 Shape::Shape(string name) {
