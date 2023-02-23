@@ -13,8 +13,8 @@
 maze_t * createMaze(char * fileName)
 {
     FILE *fp;
-    int* o_width;
-    int* o_height;
+    int o_width;
+    int o_height;
     char ** o_cells;
 
     fp = fopen(fileName, "r");
@@ -25,27 +25,28 @@ maze_t * createMaze(char * fileName)
         return NULL;
     }
 
-    fscanf(fp, "%d %d \n", o_width, o_height);
+    fscanf(fp, "%d %d \n", &o_width, &o_height);
 
-    o_cells = (char**)malloc(*o_height * sizeof(char));
+    o_cells = (char**)malloc(o_height * sizeof(char *));
 
-    for(int i=0; i<*o_height; i++) o_cells[i] = (char*)malloc(*o_width * sizeof(char));
+    for(int i=0; i<o_height; i++) o_cells[i] = (char*)malloc(o_width * sizeof(char));
 
-    for(int i=0; i<*o_height; i++){
-        for(int j=0; j<*o_width; j++){
-            if(fscanf(fp, "%c", &o_cells[i][j]) == "S"){
+    for(int i=0; i<o_height; i++){
+        for(int j=0; j<o_width; j++){
+            fscanf(fp, "%c", &o_cells[i][j]);
+            if(o_cells[i][j] == START){
                 o_maze->startColumn=j;
                 o_maze->startRow=i;
             }
-            else if (o_cells[i][j] == "E"){
+            else if (o_cells[i][j] == END){
                 o_maze->endColumn=j;
                 o_maze->endRow=i;
             }
         }
     }
 
-    o_maze->width=*o_width;
-    o_maze->height=*o_height;
+    o_maze->width=o_width;
+    o_maze->height=o_height;
     o_maze->cells=o_cells;
 
     return o_maze;
@@ -60,6 +61,12 @@ maze_t * createMaze(char * fileName)
  */
 void destroyMaze(maze_t * maze)
 {
+    for(int i=0; i<maze->height; i++){
+        free(maze->cells[i]);
+    }
+
+    free(maze->cells);
+    free(maze);
 }
 
 /*
