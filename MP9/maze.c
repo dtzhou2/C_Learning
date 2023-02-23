@@ -43,6 +43,8 @@ maze_t * createMaze(char * fileName)
                 o_maze->endRow=i;
             }
         }
+        char discard;
+        fscanf(fp, "%c", &discard);
     }
 
     o_maze->width=o_width;
@@ -80,6 +82,13 @@ void destroyMaze(maze_t * maze)
  */
 void printMaze(maze_t * maze)
 {
+    for(int i=0; i<maze->height; i++){
+        for(int j=0; j<maze->width; j++){
+            printf("%c", maze->cells[i][j]);
+        }
+        printf("\n");
+
+    }
 }
 
 /*
@@ -92,5 +101,23 @@ void printMaze(maze_t * maze)
  * SIDE EFFECTS:         Marks maze cells as visited or part of the solution path
  */
 int solveMazeManhattanDFS(maze_t * maze, int col, int row)
-{                                                                // return false if not successful
+{        
+         
+    int width = maze->width;
+    int height = maze->height;
+    char maze_obj = maze->cells[row][col];
+
+    if(col>=width || col<0 || row<0 || row>=height) return 0;
+    if(maze_obj == WALL || maze_obj == PATH) return 0;
+    if(maze_obj == END){
+       maze->cells[maze->startRow][maze->startColumn] = START;
+       return 1;
+    }
+    maze->cells[row][col] = PATH;   
+    if(solveMazeManhattanDFS(maze, col-1, row) == 1) return 1;
+    if(solveMazeManhattanDFS(maze, col+1, row) == 1) return 1;
+    if(solveMazeManhattanDFS(maze, col, row-1) == 1) return 1;
+    if(solveMazeManhattanDFS(maze, col, row+1) == 1) return 1;
+    maze->cells[row][col] = VISITED;                                     
+    return 0;                                                  
 }
