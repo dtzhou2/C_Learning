@@ -1,5 +1,4 @@
 #include "curses.h"
-#include <stdlib.h>
 #include <unistd.h>
 #include "updateBoard.h"
 int main(){
