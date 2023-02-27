@@ -1,15 +1,5 @@
 #include "sudoku.h"
 
-/* Eric Roch - MP7
- *
- * This program solves a sudoku puzzle using recursion.  Given an intial
- * puzzle board, it will attempt to fill each cell with a value.  If a cell
- * can not be filled with a valid value, the program returns to the previous
- * recursive call and tries a different value in the previous cell.  The
- * recursion allows the program to go back and adjust previous cells easily when
- * it hits a dead end.  The main function, solve_sudoku() utilizes several other
- * functions to verify that the test value can legally be placed in the current cell.
- */
 
 // You are free to declare any private functions if needed.
 
