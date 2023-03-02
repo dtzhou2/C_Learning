@@ -51,6 +51,8 @@ maze_t * createMaze(char * fileName)
     o_maze->height=o_height;
     o_maze->cells=o_cells;
 
+    fclose(fp);
+
     return o_maze;
 }
 

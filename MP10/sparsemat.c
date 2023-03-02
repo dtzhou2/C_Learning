@@ -7,169 +7,149 @@
 sp_tuples * load_tuples(char* input_file)
 {
 
+    FILE *fp;
     int rows;
     int cols;
+    int row;
+    int col;
+    double val;
 
-    sp_tuples* ptr = (sp_tuples*)malloc(sizeof(sp_tuples));
+    fp = fopen(input_file, "r");
+    sp_tuples * o_sp_tuple = (sp_tuples*)malloc(sizeof(sp_tuples));
 
-    FILE* fptr = fopen(input_file, "r");
-    if (fptr == NULL) {
-        printf("Error: %s not found", input_file);
+    if (o_sp_tuple == NULL) {
+        printf("Allocation failed");
         return NULL;
     }
 
-    fscanf(fptr, "%d %d\n", &rows, &cols);
+    fscanf(fp, "%d %d \n", &rows, &cols);
 
-    ptr->m = rows;
-    ptr->n = cols;
-    ptr->nz = 0;
-    ptr->tuples_head = NULL;
+    o_sp_tuple->m=rows;
+    o_sp_tuple->n=cols;
+    o_sp_tuple->tuples_head=NULL;
 
-    int x;
-    int y;
-    double value;
-    while (fscanf(fptr, "%d %d %lf\n", &y, &x, &value) == 3) {
-        set_tuples(ptr, y, x, value);
+    while(fscanf(fp, "%d %d %lf\n", &row, &col, &val) == 3){
+        set_tuples(o_sp_tuple, row, col, val);
     }
 
-    // if we're not at the end of the file, something went wrong
-    if (!feof(fptr)) {
-        return NULL;
-    }
+    fclose(fp);
 
-    fclose(fptr);
-    return ptr;
+    return o_sp_tuple;
+
 }
 
 
 
 double gv_tuples(sp_tuples * mat_t,int row,int col)
 {
-    sp_tuples_node* node = mat_t->tuples_head;
+    
+    return up_val(mat_t, row, col, 0);
 
-    // Traverse the list until we reach the last node
-    while(node != NULL){
-        // if this node is the coordinate we want, return the value
-        if (node->row == row && node->col == col) {
-            return node->value;
+}
+
+
+
+double up_val(sp_tuples * mat_t, int row, int col, double val){
+
+    sp_tuples_node * temp = mat_t->tuples_head;
+
+    while( temp != NULL){
+        // Check if the node has the right coordinates
+        if(temp->row == row && temp->col == col){
+            if(val != 0) temp->value = val;
+            return temp->value;
         }
-        // otherwise, move to the next node
-        node = node->next;
+        // Advance the node
+        temp = temp->next;
+    
     }
-    // if we didn't find the right node, return 0
+       
+    // Since the node is not on the list / it means the node has empty value
     return 0;
 }
 
 
-
 void set_tuples(sp_tuples * mat_t, int row, int col, double value)
 {
-    if (mat_t->tuples_head == NULL) {
-        if (value != 0) {
-            // allocate a new node
-            sp_tuples_node* head = (sp_tuples_node*)malloc(sizeof(sp_tuples_node));
-            // fill the values
-            head->row = row;
-            head->col = col;
-            head->value = value;
-            head->next = NULL;
-            // point to the new head and incriment non-zero count
-            mat_t->tuples_head = head;
-            mat_t->nz += 1;
+    if(!value) delete_tuple(mat_t, row, col);
+
+    // You know that the node already exists and has a value
+    if(!up_val(mat_t, row, col, value)){
+
+        sp_tuples_node * next = mat_t->tuples_head;
+        sp_tuples_node * prev = NULL;
+        sp_tuples_node * node = (sp_tuples_node*)malloc(sizeof(sp_tuples_node));
+       
+        node->row = row;
+        node->col = col;
+        node->value = value;
+        // Since we know that we have to add a node now we increment nz count
+        mat_t->nz += 1;
+        
+        // Checks if list is empty if so adds it
+        if(next == NULL) mat_t->tuples_head = node;
+
+        while( next != NULL ){
+            if(!sort_tuples(node, next)){
+                if(prev == NULL){
+                    node->next = next;
+                    mat_t->tuples_head = node;
+                }
+                else{
+                    prev->next = node;
+                    node->next = next;
+                }
+                break;
+
+            }
+            prev = next;
+            next = next->next;
         }
-        return;
+    
     }
 
-    // if the list has some nodes, there are four cases:
-    // 1) node exists and value is zero --> delete node
-    // 2) node exists and value is non-zero --> update node
-    // 3) node does not exist and value is zero --> do nothing
-    // 4) node does not exist and value is non-zero --> add node
-
-    if (gv_tuples(mat_t, row, col) != 0) {
-        // Case 1: delete node
-        if (value == 0) {
-            sp_tuples_node* previous = NULL;
-            sp_tuples_node* node = mat_t->tuples_head;
-
-            while(node != NULL) {
-                if (node->row == row && node->col == col) {
-                    // Case 1: deleting the head node,
-                    // set the new head to be the next node
-                    if (previous == NULL) {
-                        mat_t->tuples_head = node->next;
-                    }
-                    // Case 2: deleting middle node,
-                    // link the previous node to the next node
-                    else {
-                        previous->next = node->next;
-                    }
-
-                    free(node);
-                    mat_t->nz -= 1;
-                    return;
-                }
-                previous = node;
-                node = node->next;
-            }
-        }
-        // Case 2: update node
-        else {
-            sp_tuples_node* node = mat_t->tuples_head;
-
-            while(node != NULL) {
-                if (node->row == row && node->col == col) {
-                    node->value = value;
-                    return;
-                }
-                node = node->next;
-            }
-        }
-    }
-    else {
-        // Case 3: do nothing
-        if (value == 0) {
-            return;
-        }
-        // Case 4: add node
-        else {
-            sp_tuples_node* previous = NULL;
-            sp_tuples_node* node = mat_t->tuples_head;
-            sp_tuples_node* new = (sp_tuples_node*)malloc(sizeof(sp_tuples_node));
-
-            new->row = row;
-            new->col = col;
-            new->value = value;
-            new->next = NULL;
-            mat_t->nz += 1;
-
-            while(node != NULL) {
-                // if node comes after new...
-                if (sort_tuples(node, new)) {
-                    // if we are replacing the head...
-                    if (previous == NULL) {
-                        new->next = node;
-                        mat_t->tuples_head = new;
-                    }
-                    // otherwise insert between nodes
-                    else {
-                        previous->next = new;
-                        new->next = node;
-                    }
-                    return;
-                }
-                previous = node;
-                node = node->next;
-            }
-            // append new node to end of list
-            previous->next = new;
-            return;
-        }
-    }
     return;
 }
 
+// Determines whether one node should be before the other
+// First sorts the rows (row major) then cols
+// Returns 1 if node1 > node2 if opposite return 0
+// Returns -2 if something is broken
+int sort_tuples(sp_tuples_node* one, sp_tuples_node* two) {
 
+    if ((one->row) != (two->row)) return ((one->row) > (two->row));
+    else return ((one->col) > (two->col));
+    return -2;
+    
+}
+
+
+void delete_tuple(sp_tuples * mat_t, int row, int col){
+    
+    sp_tuples_node * curr = mat_t->tuples_head;
+    sp_tuples_node * next = NULL;
+
+    // While Loop cannot catch the head node edge case
+    // This checks if the head node is the one you wanna delete
+    if(curr->row == row && curr->col == col){
+        next = curr->next;
+        mat_t->tuples_head = next;
+        mat_t->nz -= 1;
+        free(curr);
+    }
+
+    while( curr->next != NULL){
+        next = curr->next;
+        if(next->row == row && next->col == col){
+            curr->next = next->next;
+            mat_t->nz -= 1;
+            free(next);
+        }
+    
+    }
+
+    return;
+}
 
 
 void save_tuples(char * file_name, sp_tuples * mat_t)
@@ -220,7 +200,7 @@ sp_tuples * add_tuples(sp_tuples * matA, sp_tuples * matB){
 
 
 sp_tuples * mult_tuples(sp_tuples * matA, sp_tuples * matB){
-    // matricies must have the proper dimensions to be multiplied
+     // matricies must have the proper dimensions to be multiplied
     if (matA->n != matB->m) {
         return NULL;
     }
@@ -268,30 +248,15 @@ sp_tuples * mult_tuples(sp_tuples * matA, sp_tuples * matB){
 
 
 void destroy_tuples(sp_tuples * mat_t){
-    sp_tuples_node* node = mat_t->tuples_head;
-    sp_tuples_node* next = NULL;
-    // traverse the list, saving the next
-    // node before freeing the current one
-    while (node != NULL) {
-        next = node->next;
-        free(node);
-        node = next;
+    sp_tuples_node * temp = mat_t->tuples_head;
+    sp_tuples_node * next = NULL;
+    while(temp->next!=NULL){
+        next = temp->next;
+        free(temp);
+        temp = next;
     }
-    // and finally free the matrix itself
     free(mat_t);
-
     return;
 }
 
-// if node1 < node2: return 0
-// if node1 > node2: return 1
-int sort_tuples(sp_tuples_node* node1, sp_tuples_node* node2) {
-    if ((node1->row) != (node2->row)) {
-        return ((node1->row) > (node2->row));
-    }
-    else {
-        return ((node1->col) > (node2->col));
-    }
-    // something went very wrong
-    return -1;
-}
+
