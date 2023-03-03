@@ -81,9 +81,7 @@ void set_tuples(sp_tuples * mat_t, int row, int col, double value)
     // You check that the node already exists and has a value
     if(!up_val(mat_t, row, col, value)){
         
-        if(mat_t == NULL ) return;
-    
-        
+        if(mat_t == NULL ) return;  
         sp_tuples_node * forward = mat_t->tuples_head;
         sp_tuples_node * prev = NULL;
         sp_tuples_node * node = (sp_tuples_node*)malloc(sizeof(sp_tuples_node));
@@ -91,6 +89,7 @@ void set_tuples(sp_tuples * mat_t, int row, int col, double value)
         node->row = row;
         node->col = col;
         node->value = value;
+        node->next = NULL;
         // Since we know that we have to add a node now we increment nz count
         mat_t->nz += 1;
         
@@ -100,7 +99,7 @@ void set_tuples(sp_tuples * mat_t, int row, int col, double value)
             return;
         }
         
-        while( forward != NULL ){
+        while(forward!=NULL){
             if(sort_tuples(forward, node)){
                 if(prev == NULL){
                     node->next = forward;
@@ -113,8 +112,6 @@ void set_tuples(sp_tuples * mat_t, int row, int col, double value)
                 return;
 
             }  
-
-            // if(prev != NULL) printf("%lf\n", prev->value);
 
             prev = forward;
             forward = forward->next;
@@ -133,11 +130,9 @@ void set_tuples(sp_tuples * mat_t, int row, int col, double value)
 // Returns 1 if node1 > node2 if opposite return 0
 // Returns -2 if something is broken
 int sort_tuples(sp_tuples_node* one, sp_tuples_node* two) {
-
     if ((one->row) != (two->row)) return ((one->row) > (two->row));
     else return ((one->col) > (two->col));
     return -2;
-    
 }
 
 
@@ -155,7 +150,6 @@ void delete_tuple(sp_tuples * mat_t, int row, int col){
                 free(curr);
                 return;
             }
-
             //Increments the loop forward
             prev = curr;
             curr = curr->next;
@@ -186,27 +180,26 @@ void save_tuples(char * file_name, sp_tuples * mat_t)
 
 
 sp_tuples * add_tuples(sp_tuples * matA, sp_tuples * matB){
-    // allocate and initialize new matrix C
-    sp_tuples* matC = (sp_tuples*)malloc(sizeof(sp_tuples));
+
+    sp_tuples * matC = (sp_tuples*)malloc(sizeof(sp_tuples));
+    sp_tuples_node * currA = matA->tuples_head;
+    sp_tuples_node * currB = matB->tuples_head;
     matC->m = matA->m;
     matC->n = matA->n;
     matC->nz = 0;
     matC->tuples_head = NULL;
+    double val = 0;
 
-    // nodes for traversing A, and B
-    sp_tuples_node* nodeA = matA->tuples_head;
-    sp_tuples_node* nodeB = matB->tuples_head;
-
-    while (nodeA != NULL) {
-        // set the values of matrix C to those of matrix A
-        // note that set_tuples handles the case of a null head
-        set_tuples(matC, nodeA->row, nodeA->col, nodeA->value);
-        nodeA = nodeA->next;
+    while (currA != NULL) {
+        set_tuples(matC, currA->row, currA->col, currA->value);
+        currA = currA->next;
     }
-    while (nodeB != NULL) {
-        double valueC = gv_tuples(matC, nodeB->row, nodeB->col);
-        set_tuples(matC, nodeB->row, nodeB->col, nodeB->value + valueC);
-        nodeB = nodeB->next;
+
+    while (currB != NULL) {
+        if((val = gv_tuples(matC, currB->row, currB->col)) == currB->value)
+          set_tuples(matC, currB->row, currB->col, val);
+        else set_tuples(matC, currB->row, currB->col, currB->value);
+        currB = currB->next;
     }
 
 	return matC;
@@ -215,49 +208,36 @@ sp_tuples * add_tuples(sp_tuples * matA, sp_tuples * matB){
 
 
 sp_tuples * mult_tuples(sp_tuples * matA, sp_tuples * matB){
-     // matricies must have the proper dimensions to be multiplied
-    if (matA->n != matB->m) {
-        return NULL;
-    }
 
-    // allocate and initialize new matrix C
-    sp_tuples* matC = (sp_tuples*)malloc(sizeof(sp_tuples));
+    if(matA->n != matB->m) return NULL;
+    sp_tuples * matC = (sp_tuples*)malloc(sizeof(sp_tuples));
+    sp_tuples_node * currA = matA->tuples_head;
+    sp_tuples_node * currB = matB->tuples_head;
     matC->m = matA->m;
     matC->n = matB->n;
     matC->nz = 0;
     matC->tuples_head = NULL;
+    double value = 0;
 
-    // traverse matrix A
-    sp_tuples_node* nodeA = matA->tuples_head;
-    while (nodeA != NULL) {
-        int iA = nodeA->row;
-        int jA = nodeA->col;
+    while (currA != NULL) {
+        int jA = currA->col;
+        while (currB != NULL){
+            if(currB->row == jA) {
+                double C = gv_tuples(matC, currA->row, currB->col);
+                double A = gv_tuples(matA, currA->row, currA->col);
+                double B = gv_tuples(matB, currB->row, currB->col);
+                value = (A*B)+C;
+                set_tuples(matC, currA->row, currB->col, value);
+            }
+            else if(currB->row > currA->col) break;
 
-        // traverse matrix B
-        sp_tuples_node* nodeB = matB->tuples_head;
-        while (nodeB != NULL) {
-            int iB = nodeB->row;
-            int jB = nodeB->col;
-            // if row of B matches the column of A, accumulate value in C
-            if (iB == jA) {
-                double valueA = gv_tuples(matA, iA, jA);
-                double valueB = gv_tuples(matB, iB, jB);
-                double valueC = gv_tuples(matC, iA, jB);
-                double newValue = valueC + (valueA * valueB);
-                set_tuples(matC, iA, jB, newValue);
-            }
-            // if we have finished the row, stop traversing B
-            else if (iB > jA) {
-                break;
-            }
-            // otherwise move to the next node in B
-            nodeB = nodeB->next;
+            currB = currB->next;
         }
-        // after traversing B, move to the next node in A
-        nodeA = nodeA->next;
+        currA = currA->next;
     }
 
     return matC;
+
 }
 
 
@@ -265,12 +245,10 @@ sp_tuples * mult_tuples(sp_tuples * matA, sp_tuples * matB){
 void destroy_tuples(sp_tuples * mat_t){
     sp_tuples_node * temp = mat_t->tuples_head;
     sp_tuples_node * next = NULL;
-    if(temp != NULL) {
-        while(temp->next!=NULL){
-            next = temp->next;
-            free(temp);
-            temp = next;
-        }
+    while(temp != NULL){
+        next = temp->next;
+        free(temp);
+        temp = next;
     }
     free(mat_t);
     return;

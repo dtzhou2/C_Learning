@@ -34,9 +34,6 @@ int main(int argc, char *argv[]){
 	sp_tuples * withZeroest = load_tuples("matrices/input_mats/withZeroes.txt");
 	printt(withZeroest);
 	save_tuples("matrices/output_mats/withZeroest.txt",withZeroest);
-
-
-	destroy_tuples(withZeroest);
 	
 	printf("calling load_tuples on \"matrices/input_mats/scrambled_rows_large.txt\":\n");
 	// "matrices/input_mats/scrambled_rows_large.txt"
@@ -107,8 +104,6 @@ int main(int argc, char *argv[]){
 	save_tuples("matrices/output_mats/sml_C.txt",sml_C);
 
     printf("freeing matrices from memory..\n");
-	destroy_tuples(withZeroest);
-	destroy_tuples(unscrambledrowst);
 	destroy_tuples(unscrambledrowstlarge);
 
 	destroy_tuples(a_At);
@@ -117,6 +112,7 @@ int main(int argc, char *argv[]){
 	destroy_tuples(sm_At);
 	destroy_tuples(sla_A);
 	destroy_tuples(sml_A);
+	destroy_tuples(withZeroest);
 
 	destroy_tuples(a_Bt);
 	destroy_tuples(sa_Bt);
