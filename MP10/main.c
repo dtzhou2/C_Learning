@@ -30,17 +30,31 @@ int main(int argc, char *argv[]){
     }
 
 
-	TEST_1:printf("calling load_tuples on \"matrices/input_mats/scrambled_rows.txt\":\n");
-	sp_tuples * unscrambledrowst = load_tuples("matrices/input_mats/scrambled_rows.txt");
-	printt(unscrambledrowst);
+	TEST_1:	printf("calling load_tuples on \"matrices/input_mats/withZeroes.txt\":\n");
+	sp_tuples * withZeroest = load_tuples("matrices/input_mats/withZeroes.txt");
+	printt(withZeroest);
+	save_tuples("matrices/output_mats/withZeroest.txt",withZeroest);
 
+
+	destroy_tuples(withZeroest);
+	
 	printf("calling load_tuples on \"matrices/input_mats/scrambled_rows_large.txt\":\n");
+	// "matrices/input_mats/scrambled_rows_large.txt"
 	sp_tuples * unscrambledrowstlarge = load_tuples("matrices/input_mats/scrambled_rows_large.txt");
 	printt(unscrambledrowstlarge);
 
-	printf("calling load_tuples on \"matrices/input_mats/withZeroes.txt\":\n");
-	sp_tuples * withZeroest = load_tuples("matrices/input_mats/withZeroes.txt");
-	printt(withZeroest);
+	printf("calling load_tuples on \"matrices/input_mats/scrambled_rows.txt\":\n");
+	sp_tuples * unscrambledrowst = load_tuples("matrices/input_mats/scrambled_rows.txt");
+	printt(unscrambledrowst);
+
+	// printf("calling load_tuples on \"matrices/input_mats/scrambled_rows_large.txt\":\n");
+	// // "matrices/input_mats/scrambled_rows_large.txt"
+	// sp_tuples * unscrambledrowstlarge = load_tuples("matrices/input_mats/scrambled_rows_large.txt");
+	// printt(unscrambledrowstlarge);
+
+	// printf("calling load_tuples on \"matrices/input_mats/withZeroes.txt\":\n");
+	// sp_tuples * withZeroest = load_tuples("matrices/input_mats/withZeroes.txt");
+	// printt(withZeroest);
 
 	sp_tuples * a_At = load_tuples("matrices/input_mats/a_A.txt");
 	sp_tuples * a_Bt = load_tuples("matrices/input_mats/a_B.txt");

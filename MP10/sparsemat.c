@@ -8,10 +8,10 @@ sp_tuples * load_tuples(char* input_file)
 {
 
     FILE *fp;
-    int rows;
-    int cols;
-    int row;
-    int col;
+    long rows;
+    long cols;
+    long row;
+    long col;
     double val;
 
     fp = fopen(input_file, "r");
@@ -22,13 +22,14 @@ sp_tuples * load_tuples(char* input_file)
         return NULL;
     }
 
-    fscanf(fp, "%d %d \n", &rows, &cols);
+    fscanf(fp, "%ld %ld\n", &rows, &cols);
 
     o_sp_tuple->m=rows;
     o_sp_tuple->n=cols;
+    o_sp_tuple->nz = 0;
     o_sp_tuple->tuples_head=NULL;
-
-    while(fscanf(fp, "%d %d %lf\n", &row, &col, &val) == 3){
+    printf("31");
+    while(fscanf(fp, "%ld %ld %lf\n", &row, &col, &val) == 3){
         set_tuples(o_sp_tuple, row, col, val);
     }
 
@@ -51,6 +52,7 @@ double gv_tuples(sp_tuples * mat_t,int row,int col)
 
 double up_val(sp_tuples * mat_t, int row, int col, double val){
 
+    if(mat_t == NULL) return -1; 
     sp_tuples_node * temp = mat_t->tuples_head;
 
     while( temp != NULL){
@@ -71,12 +73,18 @@ double up_val(sp_tuples * mat_t, int row, int col, double val){
 
 void set_tuples(sp_tuples * mat_t, int row, int col, double value)
 {
-    if(!value) delete_tuple(mat_t, row, col);
+    if(!value){
+        delete_tuple(mat_t, row, col);
+        return;
+    } 
 
-    // You know that the node already exists and has a value
+    // You check that the node already exists and has a value
     if(!up_val(mat_t, row, col, value)){
-
-        sp_tuples_node * next = mat_t->tuples_head;
+        
+        if(mat_t == NULL ) return;
+    
+        
+        sp_tuples_node * forward = mat_t->tuples_head;
         sp_tuples_node * prev = NULL;
         sp_tuples_node * node = (sp_tuples_node*)malloc(sizeof(sp_tuples_node));
        
@@ -87,25 +95,34 @@ void set_tuples(sp_tuples * mat_t, int row, int col, double value)
         mat_t->nz += 1;
         
         // Checks if list is empty if so adds it
-        if(next == NULL) mat_t->tuples_head = node;
-
-        while( next != NULL ){
-            if(!sort_tuples(node, next)){
+        if(forward == NULL) {
+            mat_t->tuples_head = node;
+            return;
+        }
+        
+        while( forward != NULL ){
+            if(sort_tuples(forward, node)){
                 if(prev == NULL){
-                    node->next = next;
+                    node->next = forward;
                     mat_t->tuples_head = node;
                 }
                 else{
                     prev->next = node;
-                    node->next = next;
+                    node->next = forward;
                 }
-                break;
+                return;
 
-            }
-            prev = next;
-            next = next->next;
+            }  
+
+            // if(prev != NULL) printf("%lf\n", prev->value);
+
+            prev = forward;
+            forward = forward->next;
         }
-    
+        // if (prev == NULL) return;
+        prev->next = node;
+        
+        return;
     }
 
     return;
@@ -127,28 +144,26 @@ int sort_tuples(sp_tuples_node* one, sp_tuples_node* two) {
 void delete_tuple(sp_tuples * mat_t, int row, int col){
     
     sp_tuples_node * curr = mat_t->tuples_head;
-    sp_tuples_node * next = NULL;
+    sp_tuples_node * prev = NULL;
 
-    // While Loop cannot catch the head node edge case
-    // This checks if the head node is the one you wanna delete
-    if(curr->row == row && curr->col == col){
-        next = curr->next;
-        mat_t->tuples_head = next;
-        mat_t->nz -= 1;
-        free(curr);
-    }
+    if(curr!=NULL){
+        while( curr != NULL ){
+            if(curr->row == row && curr->col == col){
+                if(prev==NULL) mat_t->tuples_head = curr->next;
+                else prev->next = curr->next;
+                mat_t->nz -= 1;
+                free(curr);
+                return;
+            }
 
-    while( curr->next != NULL){
-        next = curr->next;
-        if(next->row == row && next->col == col){
-            curr->next = next->next;
-            mat_t->nz -= 1;
-            free(next);
+            //Increments the loop forward
+            prev = curr;
+            curr = curr->next;
         }
-    
     }
 
     return;
+
 }
 
 
@@ -250,10 +265,12 @@ sp_tuples * mult_tuples(sp_tuples * matA, sp_tuples * matB){
 void destroy_tuples(sp_tuples * mat_t){
     sp_tuples_node * temp = mat_t->tuples_head;
     sp_tuples_node * next = NULL;
-    while(temp->next!=NULL){
-        next = temp->next;
-        free(temp);
-        temp = next;
+    if(temp != NULL) {
+        while(temp->next!=NULL){
+            next = temp->next;
+            free(temp);
+            temp = next;
+        }
     }
     free(mat_t);
     return;

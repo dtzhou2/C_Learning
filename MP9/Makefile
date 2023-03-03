@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=-Wall -Wextra -std=c99 
+CFLAGS= -Wextra -std=c99 
 
 grader: maze.o
 	$(CC) $(CFLAGS) maze.o -o grader
