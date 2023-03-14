@@ -50,35 +50,29 @@ void floorplan(const char file[]) {
 // Function: is_leaf_node
 // Return 1 if the given slicing tree node is a leaf node, and 0 otherwise.
 int is_leaf_node(node_t* ptr) {
-    return (ptr->module != NULL);
+  return (ptr->left == NULL && ptr->right == NULL);
 }
 
 // Function: is_internal_node
 // Return 1 if the given slicing tree node is an internal node, and 0 otherwise.
 int is_internal_node(node_t* ptr) {
-    return (ptr->cutline != UNDEFINED_CUTLINE);
+  return (ptr->cutline!=UNDEFINED_CUTLINE);
 }
 
 // Function: is_in_subtree
 // Return 1 if the given subtree rooted at node 'b' resides in the subtree rooted at node 'a'.
 int is_in_subtree(node_t* a, node_t* b) {
-    while(b != NULL) {      // start at node b and traverse up the tree
-        if (b == a) {       // if we find node a, then b is a subtree of a
-            return 1;
-        }
-        b = b->parent;
-    }
-    return 0;               // if we make it to the root, b is not a subtree of a
+    while( b!= NULL && b != a) if ((b = b->parent) == a) return 1;
+    return b==a;
 }
 
 // Procedure: rotate
 // Rotate a module from a given leaf node of the slicing tree by 90 degree. That is, the height
 // and the width of the modules are swapped.
 void rotate(node_t* ptr) {
-    // perform an XOR swap on the width and height of this module
-    ptr->module->w ^= ptr->module->h;
-    ptr->module->h ^= ptr->module->w;
-    ptr->module->w ^= ptr->module->h;
+  int temp = ptr->module->w;
+  ptr->module->w = ptr->module->h;
+  ptr->module->h = temp;
 }
 
 // Procedure: recut
@@ -86,25 +80,20 @@ void rotate(node_t* ptr) {
 // If the original cutline is a vertical cutline, the resulting cutline should be changed to
 // horizontal and vice versa.
 void recut(node_t* ptr) {
-    if(!is_internal_node(ptr)) return;
-    assert(ptr->module == NULL && ptr->cutline != UNDEFINED_CUTLINE);
-
-    // perform a boolean negation and cast back to cutline_t
-    ptr->cutline = (cutline_t)(!ptr->cutline);
-    return;
+  if(!is_internal_node(ptr) && ptr->cutline != UNDEFINED_CUTLINE) return;
+  ptr->cutline = (cutline_t)!ptr->cutline;
 }
 
 // Procedure: swap_module
 // Swap the two modules between two given leaf nodes in the slicing tree.
 void swap_module(node_t* a, node_t* b) {
-    if(!is_leaf_node(a) || !is_leaf_node(b)) return;
-    assert(a->module != NULL && a->cutline == UNDEFINED_CUTLINE);
-    assert(b->module != NULL && b->cutline == UNDEFINED_CUTLINE); //if undefined cutline, then the modules are numbers
+  if(!is_leaf_node(a) || !is_leaf_node(b)) return;
+  if(a->module != NULL || b->module != NULL) return;
+    if(a->module != NULL || b->module != NULL) return;
 
-    module_t* temp = a->module;
-    a->module = b->module;
-    b->module = temp;
-    return;
+  module_t* temp = a->module;
+  a->module = b->module;
+  b->module = temp;
 }
 
 // Procedure: swap_topology
@@ -112,24 +101,6 @@ void swap_module(node_t* a, node_t* b) {
 // The procedure applies "is_in_subtree" first to tell if any of the subtree belongs
 // to a part of the other.
 void swap_topology(node_t* a, node_t* b) {
-
-    if(a == NULL || b == NULL) return;
-    if(a->parent == NULL || b->parent == NULL) return;
-    if(is_in_subtree(a, b) || is_in_subtree(b, a)) return;
-    assert(a->parent != NULL && b->parent != NULL);
-
-    // store the parent nodes
-    node_t* a_parent = a->parent;
-    node_t* b_parent = b->parent;
-    // link the nodes to the new parents
-    a->parent = b_parent;
-    b->parent = a_parent;
-    // adjust a_parent left/right
-    a_parent->left = (a_parent->left == a) ? b : a_parent->left;
-    a_parent->right = (a_parent->right == a) ? b : a_parent->right;
-    // adjust b_parent left/right
-    b_parent->left = (b_parent->left == b) ? a : b_parent->left;
-    b_parent->right = (b_parent->right == b) ? a : b_parent->right;
 }
 
 // Procedure: get_expression
@@ -140,16 +111,6 @@ void swap_topology(node_t* a, node_t* b) {
 // details of this procedure especially the last two lines where the procedure postfix_traversal
 // is called internally to obtain the expression.
 void get_expression(node_t* root, int N, expression_unit_t* expression) {
-  int i;
-  // Clear the expression.
-  for(i=0; i<N; ++i) {
-    expression[i].module = NULL;
-    expression[i].cutline = UNDEFINED_CUTLINE;
-  }
-
-  // Obtain the expression using the postfix traversal.
-  int nth = 0;
-  postfix_traversal(root, &nth, expression);
 }
 
 // Procedure: postfix_traversal
@@ -162,25 +123,6 @@ void get_expression(node_t* root, int N, expression_unit_t* expression) {
 // assign NULL to the corresponding module pointer.
 void postfix_traversal(node_t* ptr, int* nth, expression_unit_t* expression) {
 
-    if(ptr == NULL) return;
-
-    // process the left, then the right subtrees first
-    postfix_traversal(ptr->left, nth, expression);
-    postfix_traversal(ptr->right, nth, expression);
-
-    // if this node has a module, assign it to expression[]
-    // at the nth index and leave the cutline alone
-    if (ptr->module != NULL) {
-        expression[*nth].module = ptr->module;
-    }
-    // otherwise if it has a cutline, assign it to expression[]
-    // at the nth index and leave the module alone
-    else if (ptr->cutline != UNDEFINED_CUTLINE) {
-        expression[*nth].cutline = ptr->cutline;
-    }
-    // point nth to the next index and return
-    *nth += 1;
-    return;
 }
 
 // Procedure: init_slicing_tree
@@ -211,45 +153,42 @@ void postfix_traversal(node_t* ptr, int* nth, expression_unit_t* expression) {
 // module pointer of the leaf node should point to.
 //
 node_t* init_slicing_tree(node_t* par, int n) {
-    // base case: last module node
-    // create a new leaf node instead of an internal node
-    // to be attached to the left of the parent node
-    if (n == num_modules - 1) {
-        node_t* lastNode = (node_t*)malloc(sizeof(node_t));
-        lastNode->module = &modules[n];
-        lastNode->cutline = UNDEFINED_CUTLINE;
-        lastNode->parent = par;
-        lastNode->left = NULL;
-        lastNode->right = NULL;
+  node_t* c_node = (node_t*)malloc(sizeof(node_t));
+  node_t* vert_cutline = (node_t*)malloc(sizeof(node_t));
 
-        return lastNode;
-    }
+  vert_cutline->module = NULL;
+  vert_cutline->cutline = V;
+  vert_cutline->parent = par;
+  vert_cutline->right = c_node;
 
-    // at each recursive call, create a new internal node defined by a
-    // null module and vertical cutline with the parent from the last step
-    node_t* internalNode = (node_t*)malloc(sizeof(node_t));
-    internalNode->module = NULL;
-    internalNode->cutline = V;
-    internalNode->parent = par;
+  c_node->left = NULL;
+  c_node->right = NULL;
+  c_node->cutline = UNDEFINED_CUTLINE;
+  c_node->module = &modules[n];
+  c_node->parent = vert_cutline;
 
-    // create a leaf node for the nth module to be attached to the right
-    // of the new internal node.
-    node_t* newNode = (node_t*)malloc(sizeof(node_t));
-    newNode->module = &modules[n];
-    newNode->cutline = UNDEFINED_CUTLINE;
-    newNode->parent = internalNode;
-    newNode->left = NULL;
-    newNode->right = NULL;
+  if (n+2 == num_modules){
+    node_t* c_node_left = (node_t*)malloc(sizeof(node_t));
+   
+    c_node_left->left = NULL;
+    c_node_left->right = NULL;
+    c_node_left->cutline = UNDEFINED_CUTLINE;
+    c_node_left->module = &modules[n+1];
+    c_node_left->parent = vert_cutline;
+    vert_cutline->left=c_node_left;
+    
+    return vert_cutline;
 
-    // recurse to the next level until the last module is reached
-    node_t* leftNode = init_slicing_tree(internalNode, n+1);
-    // attach the recursive node to the left and the module node to the right
-    internalNode->left = leftNode;
-    internalNode->right = newNode;
+  }
 
-    // return the internal node to be attached to the parent, or returned
-    // as the root node
-    return internalNode;
+
+  node_t* l_node = (node_t*)malloc(sizeof(node_t));
+  l_node = init_slicing_tree(vert_cutline, n+1);
+
+  vert_cutline->left = l_node;
+
+  return vert_cutline;
+
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
