@@ -317,8 +317,6 @@ int move_d(game * cur_game) //slide to the right
     int lcr; //lcr = last combined row
     int move = 0;
            
-    print_game(cur_game);
-
     for(int j=0; j<g_row; j++){
         lcr = 0;
 
@@ -351,8 +349,7 @@ int move_d(game * cur_game) //slide to the right
                 *current_cell = (*current_cell) + (*value);
                 *value = -1;
                 lcr = value+1;
-                move = 1;
-                printf("Changed");
+                move = 1; 
             }
             else continue;
         }
