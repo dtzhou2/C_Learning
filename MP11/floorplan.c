@@ -87,13 +87,14 @@ void recut(node_t* ptr) {
 // Procedure: swap_module
 // Swap the two modules between two given leaf nodes in the slicing tree.
 void swap_module(node_t* a, node_t* b) {
+  assert(a->module != NULL || b->module != NULL) ;
+  assert(a->cutline == UNDEFINED_CUTLINE && b->cutline == UNDEFINED_CUTLINE) ;
   if(!is_leaf_node(a) || !is_leaf_node(b)) return;
-  if(a->module != NULL || b->module != NULL) return;
-    if(a->module != NULL || b->module != NULL) return;
 
   module_t* temp = a->module;
   a->module = b->module;
   b->module = temp;
+  return;
 }
 
 // Procedure: swap_topology
@@ -101,6 +102,21 @@ void swap_module(node_t* a, node_t* b) {
 // The procedure applies "is_in_subtree" first to tell if any of the subtree belongs
 // to a part of the other.
 void swap_topology(node_t* a, node_t* b) {
+  assert(a != NULL && b != NULL);
+  assert(a->parent != NULL && b->parent != NULL);
+  if(is_in_subtree(a, b)) return;
+  
+  node_t* temp_a_par = a->parent;
+  
+  a->parent = b->parent;
+  b->parent = temp_a_par;
+
+  if(temp_a_par->left == a) b->parent->left = b;
+  else if (temp_a_par->right == a) b->parent->right = b;
+
+  if(a->parent->left == b) a->parent->left = a;
+  else if (a->parent->right == b) a->parent->right = a;
+  return;
 }
 
 // Procedure: get_expression
@@ -111,6 +127,17 @@ void swap_topology(node_t* a, node_t* b) {
 // details of this procedure especially the last two lines where the procedure postfix_traversal
 // is called internally to obtain the expression.
 void get_expression(node_t* root, int N, expression_unit_t* expression) {
+  int i;
+  // Clear the expression.
+  for(i=0; i<N; ++i) {
+    expression[i].module = NULL;
+    expression[i].cutline = UNDEFINED_CUTLINE;
+  }
+
+  // Obtain the expression using the postfix traversal.
+  int nth = 0;
+  postfix_traversal(root, &nth, expression);
+
 }
 
 // Procedure: postfix_traversal
@@ -122,6 +149,24 @@ void get_expression(node_t* root, int N, expression_unit_t* expression) {
 // "UNDEFINED_CUTLINE". On the other hand, if the expression unit is a cutline type, you should
 // assign NULL to the corresponding module pointer.
 void postfix_traversal(node_t* ptr, int* nth, expression_unit_t* expression) {
+
+  if(ptr == NULL) return;
+
+  postfix_traversal(ptr->left, nth, expression);
+  postfix_traversal(ptr->right, nth, expression);
+
+  if(is_leaf_node(ptr)) {
+    expression[*nth].module = ptr->module;
+    expression[*nth].cutline = UNDEFINED_CUTLINE;
+  }
+
+  if(is_internal_node(ptr)) {
+    expression[*nth].module = NULL;
+    expression[*nth].cutline = ptr->cutline;
+  }
+
+  *nth = *nth + 1;
+  return;
 
 }
 
