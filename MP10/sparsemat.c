@@ -3,11 +3,27 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+/* Daniel Zhou - MP10
+ * This MP helps perform various operations on a sparse marix of elements
+    load_tuples - loads the sparse matrix from an input file, calling set_tuples to 
+    sort the matrix in row major order
+    set_tuples (helper function) takes in an inpu tuple from load tuples and updates the matrix with
+    the tuple, adding or deleting tuples as necessary to create a row major order sorted tuple list. 
+    Calls del_tuple to delete_tuples if necessary
+    del_tuple (helper function) deletes tuple at the specified row and col, making sure to free it to prevent
+    memory leaks
+    sort_tuple (helper function) given two tuples, evaluates which one should come first using row/major
+    order
+    gv_tuple - gets the value of a tuple in the array by calling up_val
+    up_val (helper function) takes in a value and updates the row/col in the array with that value
+    if the value taken in is 0, does no modify array and only returns value found
+    add_tuples - adds two matrices together using the matrix addition algorithm 
+    mut_tup`les - multiplies two matrices together using the matrix multiplication algorithm
+ */
 
 // Loads the sp_tuples data structure from an input file
 sp_tuples * load_tuples(char* input_file)
 {
-
     // Basic Definition of Variables 
     FILE *fp;
     sp_tuples * o_sp_tuple = (sp_tuples*)malloc(sizeof(sp_tuples));
