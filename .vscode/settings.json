@@ -1,5 +1,7 @@
 {
     "files.associations": {
-        "cstdlib": "c"
+        "cstdlib": "c",
+        "cmath": "cpp",
+        "random": "cpp"
     }
 }

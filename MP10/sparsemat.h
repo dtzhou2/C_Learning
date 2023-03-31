@@ -43,3 +43,10 @@ void destroy_tuples(sp_tuples * mat_t);
 
 //determine which node would appear first in a sorted list. Returns 0 if node1 < node2 and 1 otherwise.
 int sort_tuples(sp_tuples_node* node1, sp_tuples_node* node2);
+
+//Deletes a node based on a given row/col value
+int delete_tuple(sp_tuples * mat_t, int row, int col, double value);
+
+//Returns 0 if it cant find a node at the value, updates the node
+//with the val if it can find it
+double up_val(sp_tuples * mat_t, int row, int col, double val);
