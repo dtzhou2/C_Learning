@@ -241,6 +241,8 @@ sp_tuples * mult_tuples(sp_tuples * matA, sp_tuples * matB){
         // traverse matrix B
         sp_tuples_node* nodeB = matB->tuples_head;
         while (nodeB != NULL) {
+            // If we have finished the row, break the code
+            if (iB > jA) break;
             int iB = nodeB->row;
             int jB = nodeB->col;
             // if row of B matches the column of A, accumulate value in C
@@ -250,10 +252,6 @@ sp_tuples * mult_tuples(sp_tuples * matA, sp_tuples * matB){
                 double valueC = gv_tuples(matC, iA, jB);
                 double newValue = valueC + (valueA * valueB);
                 set_tuples(matC, iA, jB, newValue);
-            }
-            // if we have finished the row, stop traversing B
-            else if (iB > jA) {
-                break;
             }
             // otherwise move to the next node in B
             nodeB = nodeB->next;
