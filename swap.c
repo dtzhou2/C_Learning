@@ -67,7 +67,8 @@ int main(void) {
     f.fu.type = 0;
     f.fu.node_num=1;
     printf("F Value %d\n", f_p->fu.type);
-    
+
+
     //Basic Floating point and Type Conversion Shit
     short si = 5; // 2^15 min size
     long dd = 8; // 2^31 min size
