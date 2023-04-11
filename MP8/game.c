@@ -126,11 +126,11 @@ int move_w(game * cur_game)
             // printf("row # %d \n", j);
             cell* current_cell = get_cell(cur_game, j, i);
             cell* value = get_cell(cur_game, j+1, i);
-            if(value != NULL && *value == *current_cell && lcr != value+1
+            if(value != NULL && *value == *current_cell && lcr != j
                 && *current_cell != -1){
                 *current_cell = (*current_cell) + (*value);
                 *value = -1;
-                lcr = value+1;
+                lcr = j;
                 move = 1;
             }
             else continue;
